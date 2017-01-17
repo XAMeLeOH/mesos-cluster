@@ -1,0 +1,13 @@
+#------------------------------------------------------------------------------#
+#                   OFFICIAL DEBIAN REPOS                    
+#------------------------------------------------------------------------------#
+# {{ ansible_managed }}
+
+###### Debian Main Repos
+deb http://ftp.{{ common_repo_country }}.debian.org/debian/ jessie main
+deb-src http://ftp.{{ common_repo_country }}.debian.org/debian/ jessie main
+
+###### Debian Update Repos
+deb http://security.debian.org/ jessie/updates main
+deb-src http://security.debian.org/ jessie/updates main
+

@@ -1,5 +1,9 @@
 ---
 
+- name: Set nearest repositories
+  template: src=templates/etc-apt-sources.list dest=/etc/apt/sources.list
+  when: common_repo_country != None
+
 - name: Add Java repository key
   apt_key: keyserver=keyserver.ubuntu.com id=EEA14886
 

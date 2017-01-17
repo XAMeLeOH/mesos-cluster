@@ -7,12 +7,12 @@
   roles:
     - common
 
-- hosts: mesos_slaves
-  become: true
-  roles:
-    - mesos-slave
-
 - hosts: mesos_masters
   become: true
   roles:
     - mesos-master
+
+- hosts: mesos_slaves
+  become: true
+  roles:
+    - mesos-slave

@@ -63,6 +63,7 @@ Vagrant.configure(2) do |config|
   # end
 
   config.ssh.insert_key = false
+  config.vm.boot_timeout = 20
 
   MESOS_MASTERS = ENV.fetch("MESOS_MASTERS", "3").to_i
   MESOS_SLAVES = ENV.fetch("MESOS_SLAVES", "2").to_i
@@ -81,7 +82,7 @@ Vagrant.configure(2) do |config|
           ansible.limit = "all"
           ansible.playbook = "provisioning/playbook.yml"
           ansible.extra_vars = {
-            "quorum" => ((1.0 + MESOS_MASTERS) / 2).ceil
+            "common_repo_country" => ENV.fetch("REPO_COUNTRY", nil)
           }
           ansible.groups = {
             "mesos_masters" => (1..MESOS_MASTERS).map {|item| "mesos-master-#{item}"},
