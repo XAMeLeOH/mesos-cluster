@@ -1,0 +1,18 @@
+---
+
+- hosts:
+    - mesos_masters
+    - mesos_slaves
+  become: true
+  roles:
+    - common
+
+- hosts: mesos_slaves
+  become: true
+  roles:
+    - mesos-slave
+
+- hosts: mesos_masters
+  become: true
+  roles:
+    - mesos-master

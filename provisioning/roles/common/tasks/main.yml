@@ -1,0 +1,26 @@
+---
+
+- name: Add Java repository key
+  apt_key: keyserver=keyserver.ubuntu.com id=EEA14886
+
+- name: Add Java repository
+  apt_repository:
+    filename: webupd8team-java
+    repo: "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
+
+- name: Add Mesos repository key
+  apt_key: keyserver=keyserver.ubuntu.com id=DF7D54CBE56151BF
+
+- name: Add Mesos repository
+  apt_repository:
+    filename: mesos
+    repo: "deb http://repos.mesosphere.com/{{ansible_distribution|lower}} {{ansible_distribution_release}} main"
+
+- name: set licence selected
+  debconf: name=oracle-java7-installer question=shared/accepted-oracle-license-v1-1 value=true vtype=select
+
+- name: Install common packages
+  apt: name={{ item }} install_recommends=no
+  with_items:
+    - oracle-java8-installer
+    - ntp
