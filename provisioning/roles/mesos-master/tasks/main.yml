@@ -29,16 +29,6 @@
 - name: Install zookeeper-conf alternatives
   alternatives: link=/etc/zookeeper/conf name=zookeeper-conf path=/usr/local/etc/zookeeper/conf_local
 
-- name: Configure mesos master
-  template: src=templates/{{ item.tmpl }} dest={{ item.dest }}
-  with_items:
-    - { tmpl: etc-mesos-zk.j2, dest: /etc/mesos/zk }
-    - { tmpl: etc-mesos-master-ip.j2, dest: /etc/mesos-master/ip }
-    - { tmpl: etc-mesos-master-hostname.j2, dest: /etc/mesos-master/hostname }
-    - { tmpl: etc-mesos-master-quorum.j2, dest: /etc/mesos-master/quorum }
-  notify:
-    - restart mesos-master
-
 - name: Create marathon configs
   template: src=templates/{{ item.tmpl }} dest={{ item.dest }}
   with_items:
@@ -51,8 +41,29 @@
 - name: Install Components
   apt: name={{ item }} install_recommends=no
   with_items:
+    - marathon
+
+- name: Start Marathon
+  service: name=marathon state=started enabled=yes
+
+- name: Wait for marathon
+  wait_for: host={{ server_ip }} port=8080 delay=10
+
+- name: Install Components
+  apt: name={{ item }} install_recommends=no
+  with_items:
     - mesos
     - zookeeperd
+
+- name: Configure mesos master
+  template: src=templates/{{ item.tmpl }} dest={{ item.dest }}
+  with_items:
+    - { tmpl: etc-mesos-zk.j2, dest: /etc/mesos/zk }
+    - { tmpl: etc-mesos-master-ip.j2, dest: /etc/mesos-master/ip }
+    - { tmpl: etc-mesos-master-hostname.j2, dest: /etc/mesos-master/hostname }
+    - { tmpl: etc-mesos-master-quorum.j2, dest: /etc/mesos-master/quorum }
+  notify:
+    - restart mesos-master
 
 - name: Cleanup mesos configuration directories
   file: path={{ item }} state=absent
@@ -61,25 +72,18 @@
     - /etc/mesos-master/quorum.dpkg-dist
   notify:
     - restart mesos-master
-  register: mesosclean
-
-- name: Restart mesos
-  service: name=mesos-master state=restarted
-  when: mesosclean.changed
-
-- name: Install Marathon
-  apt: name={{ item }} install_recommends=no
-  with_items:
-    - marathon
 
 - name: Start Zookeeper
   service: name=zookeeper state=started enabled=yes
 
+- name: Wait for zookeeper
+  wait_for: port=2181 delay=10
+
 - name: Start Mesos master
   service: name=mesos-master state=started enabled=yes
 
-- name: Start Marathon
-  service: name=marathon state=started enabled=yes
+- name: Wait for mesos-master
+  wait_for: host={{ server_ip }} port=5050 delay=10
 
 - name: Disable Mesos slave
   service: name=mesos-slave state=stopped enabled=no
