@@ -14,8 +14,6 @@
   with_items:
     - { tmpl: etc-zookeeper-conf-myid.j2, dest: /usr/local/etc/zookeeper/conf_local/myid }
     - { tmpl: etc-zookeeper-conf-zoo.cfg.j2, dest: /usr/local/etc/zookeeper/conf_local/zoo.cfg }
-  notify:
-    - restart zookeeper
 
 - name: Link zookeeper defaults
   file: path=/usr/local/etc/zookeeper/conf_local/{{ item }} src=/etc/zookeeper/conf_example/{{ item }} state=link force=yes
@@ -23,8 +21,6 @@
     - configuration.xsl
     - environment
     - log4j.properties
-  notify:
-    - restart zookeeper
 
 - name: Install zookeeper-conf alternatives
   alternatives: link=/etc/zookeeper/conf name=zookeeper-conf path=/usr/local/etc/zookeeper/conf_local
@@ -35,25 +31,19 @@
     - { tmpl: etc-marathon-conf-hostname.j2, dest: /etc/marathon/conf/hostname }
     - { tmpl: etc-marathon-conf-master.j2, dest: /etc/marathon/conf/master }
     - { tmpl: etc-marathon-conf-zk.j2, dest: /etc/marathon/conf/zk }
-  notify:
-    - restart marathon
 
 - name: Install Components
   apt: name={{ item }} install_recommends=no
   with_items:
     - marathon
+    - mesos
+    - zookeeperd
 
 - name: Start Marathon
   service: name=marathon state=started enabled=yes
 
 - name: Wait for marathon
   wait_for: host={{ server_ip }} port=8080 delay=10
-
-- name: Install Components
-  apt: name={{ item }} install_recommends=no
-  with_items:
-    - mesos
-    - zookeeperd
 
 - name: Configure mesos master
   template: src=templates/{{ item.tmpl }} dest={{ item.dest }}
@@ -62,16 +52,12 @@
     - { tmpl: etc-mesos-master-ip.j2, dest: /etc/mesos-master/ip }
     - { tmpl: etc-mesos-master-hostname.j2, dest: /etc/mesos-master/hostname }
     - { tmpl: etc-mesos-master-quorum.j2, dest: /etc/mesos-master/quorum }
-  notify:
-    - restart mesos-master
 
 - name: Cleanup mesos configuration directories
   file: path={{ item }} state=absent
   with_items:
     - /etc/mesos/zk.dpkg-dist
     - /etc/mesos-master/quorum.dpkg-dist
-  notify:
-    - restart mesos-master
 
 - name: Start Zookeeper
   service: name=zookeeper state=started enabled=yes

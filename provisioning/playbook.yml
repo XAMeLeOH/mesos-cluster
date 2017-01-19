@@ -6,13 +6,22 @@
   become: true
   roles:
     - common
+  environment:
+    http_proxy: http://192.168.33.1:3128
+    https_proxy: http://192.168.33.1:3128
 
 - hosts: mesos_masters
   become: true
   roles:
     - mesos-master
+  environment:
+    http_proxy: http://192.168.33.1:3128
+    https_proxy: http://192.168.33.1:3128
 
 - hosts: mesos_slaves
   become: true
   roles:
     - mesos-slave
+  environment:
+    http_proxy: http://192.168.33.1:3128
+    https_proxy: http://192.168.33.1:3128
