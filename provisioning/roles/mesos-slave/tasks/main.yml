@@ -12,8 +12,6 @@
     - { tmpl: etc-mesos-zk.j2, dest: /etc/mesos/zk }
     - { tmpl: etc-mesos-slave-ip.j2, dest: /etc/mesos-slave/ip }
     - { tmpl: etc-mesos-slave-hostname.j2, dest: /etc/mesos-slave/hostname }
-  notify:
-    - Reload Mesos
 
 - name: Install packages
   apt: name={{ item }} install_recommends=no
