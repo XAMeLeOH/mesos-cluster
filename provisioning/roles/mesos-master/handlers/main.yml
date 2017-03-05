@@ -1,0 +1,6 @@
+
+- name: Reload Mesos
+  service: name=mesos-master state=reloaded
+
+- name: Reload Zookeeper
+  service: name=zookeeper state=reloaded

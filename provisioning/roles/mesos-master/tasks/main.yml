@@ -14,6 +14,8 @@
   with_items:
     - { tmpl: etc-zookeeper-conf-myid.j2, dest: /usr/local/etc/zookeeper/conf_local/myid }
     - { tmpl: etc-zookeeper-conf-zoo.cfg.j2, dest: /usr/local/etc/zookeeper/conf_local/zoo.cfg }
+  notice:
+    - Reload Zookeeper
 
 - name: Link zookeeper defaults
   file: path=/usr/local/etc/zookeeper/conf_local/{{ item }} src=/etc/zookeeper/conf_example/{{ item }} state=link force=yes
@@ -21,9 +23,13 @@
     - configuration.xsl
     - environment
     - log4j.properties
+  notice:
+    - Reload Zookeeper
 
 - name: Install zookeeper-conf alternatives
   alternatives: link=/etc/zookeeper/conf name=zookeeper-conf path=/usr/local/etc/zookeeper/conf_local
+  notice:
+    - Reload Zookeeper
 
 - name: Create marathon configs
   template: src=templates/{{ item.tmpl }} dest={{ item.dest }}
@@ -31,6 +37,8 @@
     - { tmpl: etc-marathon-conf-hostname.j2, dest: /etc/marathon/conf/hostname }
     - { tmpl: etc-marathon-conf-master.j2, dest: /etc/marathon/conf/master }
     - { tmpl: etc-marathon-conf-zk.j2, dest: /etc/marathon/conf/zk }
+  notice:
+    - Reload Mesos
 
 - name: Install Components
   apt: name={{ item }} install_recommends=no
@@ -52,6 +60,8 @@
     - { tmpl: etc-mesos-master-ip.j2, dest: /etc/mesos-master/ip }
     - { tmpl: etc-mesos-master-hostname.j2, dest: /etc/mesos-master/hostname }
     - { tmpl: etc-mesos-master-quorum.j2, dest: /etc/mesos-master/quorum }
+  notice:
+    - Reload Mesos
 
 - name: Cleanup mesos configuration directories
   file: path={{ item }} state=absent
