@@ -94,7 +94,6 @@ Vagrant.configure(2) do |config|
             "server_ip" => "192.168.33.#{10+num}"
           }; hash }
           ansible.host_vars = (1..MESOS_SLAVES).inject(ansible.host_vars) { |hash, num| hash["mesos-slave-#{num}"] = {
-            # "server_id" => num,
             "server_ip" => "192.168.33.#{30+num}"
           }; hash }
         end
