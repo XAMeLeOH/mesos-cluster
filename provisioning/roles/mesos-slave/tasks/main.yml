@@ -23,8 +23,7 @@
   with_items:
     - mesos-slave
 
-- name: Disable Mesos master and zookeeper
+- name: Disable Mesos master
   service: name={{ item }} state=stopped enabled=no
   with_items:
     - mesos-master
-    - zookeeper
