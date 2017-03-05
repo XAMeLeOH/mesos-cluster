@@ -1,3 +1,4 @@
 
 - name: Reload Mesos
   service: name=mesos-slave state=reloaded
+  skip_errors: yes
